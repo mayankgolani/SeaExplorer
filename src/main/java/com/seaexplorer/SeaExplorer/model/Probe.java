@@ -9,77 +9,85 @@ public class Probe {
     private Position position;
     private Direction direction;
     private final Grid grid;
-    private final Set<Position> obstacles;
-    private final List<Position> visited = new ArrayList<>();
+    private final List<Position> visited;
 
-    public Probe(Position position, Direction direction, Grid grid, Set<Position> obstacles) {
-        this.position = position;
-        this.direction = direction;
+    public Probe(Position startPosition, Direction startDirection, Grid grid) {
+        this.position = startPosition;
+        this.direction = startDirection;
         this.grid = grid;
-        this.obstacles = obstacles;
-        this.visited.add(position);
+        this.visited = new ArrayList<>();
+        this.visited.add(startPosition);
+    }
+
+    public void executeCommands(String commands) {
+        for (char command : commands.toCharArray()) {
+            switch (command) {
+                case 'F':
+                    move(1);
+                    break;
+                case 'B':
+                    move(-1);
+                    break;
+                case 'L':
+                    turnLeft();
+                    break;
+                case 'R':
+                    turnRight();
+                    break;
+                default:
+                    // Handle invalid command if necessary
+                    break;
+            }
+        }
+    }
+
+    private void move(int step) {
+        Position nextPosition = calculateNextPosition(step);
+        if (grid.isWithinBounds(nextPosition) && !grid.isObstacle(nextPosition)) {
+            position = nextPosition;
+            visited.add(position);
+        }
+        // Else, ignore the move due to boundary or obstacle
+    }
+
+    private Position calculateNextPosition(int step) {
+        int x = position.getX();
+        int y = position.getY();
+        switch (direction) {
+            case N:
+                y += step;
+                break;
+            case S:
+                y -= step;
+                break;
+            case E:
+                x += step;
+                break;
+            case W:
+                x -= step;
+                break;
+        }
+        return new Position(x, y);
+    }
+
+    private void turnLeft() {
+        direction = direction.turnLeft();
+    }
+
+    private void turnRight() {
+        direction = direction.turnRight();
     }
 
     public Position getPosition() {
         return position;
     }
 
+    public Direction getDirection() {
+        return direction;
+    }
+
     public List<Position> getVisited() {
         return visited;
     }
-
-    public void executeCommands(String commands) {
-        for (char c : commands.toCharArray()) {
-            switch (c) {
-                case 'F' -> moveForward();
-                case 'B' -> moveBackward();
-                case 'L' -> turnLeft();
-                case 'R' -> turnRight();
-            }
-        }
-    }
-
-    private void moveForward() {
-        Position next = switch (direction) {
-            case N -> new Position(position.getX(), position.getY() + 1);
-            case S -> new Position(position.getX(), position.getY() - 1);
-            case E -> new Position(position.getX() + 1, position.getY());
-            case W -> new Position(position.getX() - 1, position.getY());
-        };
-        if (grid.isWithinBounds(next) && !obstacles.contains(next)) {
-            position = next;
-            visited.add(position);
-        }
-    }
-
-    private void turnLeft() {
-        direction = switch (direction) {
-            case N -> Direction.W;
-            case W -> Direction.S;
-            case S -> Direction.E;
-            case E -> Direction.N;
-        };
-    }
-
-    private void turnRight() {
-        direction = switch (direction) {
-            case N -> Direction.E;
-            case E -> Direction.S;
-            case S -> Direction.W;
-            case W -> Direction.N;
-        };
-    }
-
-    private void moveBackward() {
-        Position next = switch (direction) {
-            case N -> new Position(position.getX(), position.getY() - 1);
-            case S -> new Position(position.getX(), position.getY() + 1);
-            case E -> new Position(position.getX() - 1, position.getY());
-            case W -> new Position(position.getX() + 1, position.getY());
-        };
-        if (grid.isWithinBounds(next) && !obstacles.contains(next)) {
-            position = next;
-            visited.add(position);
-        }
-    }
 }
+

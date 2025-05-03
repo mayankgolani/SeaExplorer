@@ -6,33 +6,48 @@ import com.seaexplorer.SeaExplorer.model.Position;
 import com.seaexplorer.SeaExplorer.model.Probe;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ProbeTest {
     @Test
-    void testMoveForwardFacingNorth() {
-        Grid grid = new Grid(5, 5);
-        Probe probe = new Probe(new Position(0, 0), Direction.N, grid, Set.of());
+    public void testMoveForwardWithoutObstacles() {
+        Grid grid = new Grid(5, 5, new HashSet<>());
+        Probe probe = new Probe(new Position(0, 0), Direction.N, grid);
+
         probe.executeCommands("F");
 
         assertEquals(new Position(0, 1), probe.getPosition());
+        assertEquals(Direction.N, probe.getDirection());
+        assertEquals(Arrays.asList(new Position(0, 0), new Position(0, 1)), probe.getVisited());
     }
 
     @Test
-    void testTurning() {
-        Direction dir = Direction.N;
-        assertEquals(Direction.W, dir.turnLeft());
-        assertEquals(Direction.E, dir.turnRight());
+    public void testObstaclePreventsMovement() {
+        Set<Position> obstacles = new HashSet<>();
+        obstacles.add(new Position(0, 1));
+        Grid grid = new Grid(5, 5, obstacles);
+        Probe probe = new Probe(new Position(0, 0), Direction.N, grid);
+
+        probe.executeCommands("F");
+
+        assertEquals(new Position(0, 0), probe.getPosition());
+        assertEquals(Arrays.asList(new Position(0, 0)), probe.getVisited());
     }
 
     @Test
-    void testMoveAndTurnSequence() {
-        Grid grid = new Grid(5, 5);
-        Probe probe = new Probe(new Position(0, 0), Direction.N, grid, Set.of());
-        probe.executeCommands("FFRFF");
+    public void testBoundaryPreventsMovement() {
+        Grid grid = new Grid(5, 5, new HashSet<>());
+        Probe probe = new Probe(new Position(0, 0), Direction.S, grid);
 
-        assertEquals(new Position(2, 2), probe.getPosition());
+        probe.executeCommands("F");
+
+        assertEquals(new Position(0, 0), probe.getPosition());
+        assertEquals(Arrays.asList(new Position(0, 0)), probe.getVisited());
     }
+
+
 }

@@ -7,6 +7,8 @@ import com.seaexplorer.SeaExplorer.model.Probe;
 import com.seaexplorer.SeaExplorer.service.ProbeService;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -14,15 +16,33 @@ public class ProbeServiceImpl implements ProbeService {
 
     private Probe probe;
 
-    public ProbeServiceImpl() {
-        probe = new Probe(new Position(0, 0), Direction.N, new Grid(5, 5), Set.of());
+    public void initializeProbe(int gridWidth, int gridHeight, int startX, int startY, String startDirection, List<Position> obstacleList) {
+        Set<Position> obstacles = new HashSet<>(obstacleList);
+        Grid grid = new Grid(gridWidth, gridHeight, obstacles);
+        Position startPosition = new Position(startX, startY);
+        Direction direction = Direction.valueOf(startDirection);
+        this.probe = new Probe(startPosition, direction, grid);
     }
 
-    public void executeCommand(String command) {
-        probe.executeCommands(command);
+    public void executeCommand(String commands) {
+        if (probe != null) {
+            probe.executeCommands(commands);
+        }
     }
 
-    public Position getProbePosition() {
+    public Position getCurrentPosition() {
         return probe.getPosition();
+    }
+
+    public Direction getCurrentDirection() {
+        return probe.getDirection();
+    }
+
+    public List<Position> getVisitedPositions() {
+        return probe.getVisited();
+    }
+
+    public boolean isInitialized() {
+        return probe != null;
     }
 }

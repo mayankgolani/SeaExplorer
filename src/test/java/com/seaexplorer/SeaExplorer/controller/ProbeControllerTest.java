@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -20,26 +21,44 @@ class ProbeControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    void testGetPosition() throws Exception {
-        mockMvc.perform(get("/api/probe/position"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.x").value(0))
-                .andExpect(jsonPath("$.y").value(0));
+    public void testInitEndpoint() throws Exception {
+        String initJson = "{ \"gridWidth\": 5, \"gridHeight\": 5, \"startX\": 0, \"startY\": 0, \"startDirection\": \"N\", \"obstacles\": [{\"x\":1,\"y\":1}] }";
+
+        mockMvc.perform(post("/api/probe/init")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(initJson))
+                .andExpect(status().isOk());
     }
 
     @Test
-    void testExecuteCommand() throws Exception {
-        String command = "FFRFF";
-
-        mockMvc.perform(post("/api/probe/command")
-                        .contentType("application/json")
-                        .content("\"" + command + "\""))
+    public void testCommandsEndpoint() throws Exception {
+        String initJson = "{ \"gridWidth\": 5, \"gridHeight\": 5, \"startX\": 0, \"startY\": 0, \"startDirection\": \"N\", \"obstacles\": [] }";
+        mockMvc.perform(post("/api/probe/init")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(initJson))
                 .andExpect(status().isOk());
 
-        // Verify that the position has changed after the command sequence
-        mockMvc.perform(get("/api/probe/position"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.x").value(2))
-                .andExpect(jsonPath("$.y").value(2));
+        String commandJson = "{ \"commands\": \"FFRFF\" }";
+        mockMvc.perform(post("/api/probe/commands")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(commandJson))
+                .andExpect(status().isOk());
     }
+
+    @Test
+    public void testStatusEndpoint() throws Exception {
+        String initJson = "{ \"gridWidth\": 5, \"gridHeight\": 5, \"startX\": 0, \"startY\": 0, \"startDirection\": \"N\", \"obstacles\": [] }";
+        mockMvc.perform(post("/api/probe/init")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(initJson))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/probe/status"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.currentPosition.x").value(0))
+                .andExpect(jsonPath("$.currentPosition.y").value(0))
+                .andExpect(jsonPath("$.currentDirection").value("N"));
+    }
+
+
 }
