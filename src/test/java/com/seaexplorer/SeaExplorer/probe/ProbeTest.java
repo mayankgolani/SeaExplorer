@@ -26,4 +26,13 @@ public class ProbeTest {
         assertEquals(Direction.W, dir.turnLeft());
         assertEquals(Direction.E, dir.turnRight());
     }
+
+    @Test
+    void testMoveAndTurnSequence() {
+        Grid grid = new Grid(5, 5);
+        Probe probe = new Probe(new Position(0, 0), Direction.N, grid, Set.of());
+        probe.executeCommands("FFRFF");
+
+        assertEquals(new Position(2, 2), probe.getPosition());
+    }
 }

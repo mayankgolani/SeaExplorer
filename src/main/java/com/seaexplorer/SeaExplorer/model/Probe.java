@@ -20,9 +20,22 @@ public class Probe {
         this.visited.add(position);
     }
 
+    public Position getPosition() {
+        return position;
+    }
+
+    public List<Position> getVisited() {
+        return visited;
+    }
+
     public void executeCommands(String commands) {
         for (char c : commands.toCharArray()) {
-            if (c == 'F') moveForward();
+            switch (c) {
+                case 'F' -> moveForward();
+                case 'B' -> moveBackward();
+                case 'L' -> turnLeft();
+                case 'R' -> turnRight();
+            }
         }
     }
 
@@ -39,11 +52,34 @@ public class Probe {
         }
     }
 
-    public Position getPosition() {
-        return position;
+    private void turnLeft() {
+        direction = switch (direction) {
+            case N -> Direction.W;
+            case W -> Direction.S;
+            case S -> Direction.E;
+            case E -> Direction.N;
+        };
     }
 
-    public List<Position> getVisited() {
-        return visited;
+    private void turnRight() {
+        direction = switch (direction) {
+            case N -> Direction.E;
+            case E -> Direction.S;
+            case S -> Direction.W;
+            case W -> Direction.N;
+        };
+    }
+
+    private void moveBackward() {
+        Position next = switch (direction) {
+            case N -> new Position(position.getX(), position.getY() - 1);
+            case S -> new Position(position.getX(), position.getY() + 1);
+            case E -> new Position(position.getX() - 1, position.getY());
+            case W -> new Position(position.getX() + 1, position.getY());
+        };
+        if (grid.isWithinBounds(next) && !obstacles.contains(next)) {
+            position = next;
+            visited.add(position);
+        }
     }
 }
