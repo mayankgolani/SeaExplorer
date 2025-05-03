@@ -1,17 +1,18 @@
 package com.seaexplorer.SeaExplorer.service;
 
 import com.seaexplorer.SeaExplorer.model.Position;
+import com.seaexplorer.SeaExplorer.service.impl.ProbeServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ProbeServiceTest {
-    private ProbeService probeService;
+public class ProbeServiceImplTest {
+    private ProbeServiceImpl probeService;
 
     @BeforeEach
     void setUp() {
-        probeService = new ProbeService();
+        probeService = new ProbeServiceImpl();
     }
 
     @Test

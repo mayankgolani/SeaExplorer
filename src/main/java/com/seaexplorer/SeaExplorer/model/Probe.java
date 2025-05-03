@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-// Probe.java
+
 public class Probe {
     private Position position;
     private Direction direction;
