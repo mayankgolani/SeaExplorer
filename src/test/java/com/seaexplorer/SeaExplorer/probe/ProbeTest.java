@@ -1,5 +1,9 @@
 package com.seaexplorer.SeaExplorer.probe;
 
+import com.seaexplorer.SeaExplorer.model.Direction;
+import com.seaexplorer.SeaExplorer.model.Grid;
+import com.seaexplorer.SeaExplorer.model.Position;
+import com.seaexplorer.SeaExplorer.model.Probe;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
