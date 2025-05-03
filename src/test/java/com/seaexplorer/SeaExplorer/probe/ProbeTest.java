@@ -19,4 +19,11 @@ public class ProbeTest {
 
         assertEquals(new Position(0, 1), probe.getPosition());
     }
+
+    @Test
+    void testTurning() {
+        Direction dir = Direction.N;
+        assertEquals(Direction.W, dir.turnLeft());
+        assertEquals(Direction.E, dir.turnRight());
+    }
 }
